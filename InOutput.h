@@ -965,6 +965,105 @@ class LWOutputParams : public OutputParams
     };
 #endif /*COOLING_MOLECULARH*/
 
+#ifdef DMFEEDBACK
+/// @brief output the DM local density
+class DMDensityOutputParams : public OutputParams
+{
+    virtual double dValue(GravityParticle *p)
+    {
+    if (TYPETest(p, TYPE_STAR))
+        return p->dDMDensity();
+    else
+        return 0.0;
+    }
+    virtual Vector3D<double> vValue(GravityParticle *p)
+                {CkAssert(0); return 0.0;}
+    virtual void setDValue(GravityParticle *p, double val) {
+        if (TYPETest(p, TYPE_STAR)) p->dDMDensity() = val;
+        }
+    virtual int64_t iValue(GravityParticle *p) {CkAssert(0); return 0.0;}
+    virtual void setIValue(GravityParticle *p, int64_t iValue) {CkAssert(0);}
+ public:
+    DMDensityOutputParams() {}
+    DMDensityOutputParams(std::string _fileName, int _iBinaryOut, double _dTime) {
+        bFloat = 1;
+        bVector = 0; fileName = _fileName; iBinaryOut = _iBinaryOut;
+        sTipsyExt = "DMDensity"; sNChilExt = "DMDensity";
+        dTime = _dTime;
+        iType = TYPE_STAR; }
+    PUPable_decl(DMDensityOutputParams);
+    DMDensityOutputParams(CkMigrateMessage *m) {}
+    virtual void pup(PUP::er &p) {
+        OutputParams::pup(p);//Call base class
+	}
+    };
+
+/// @brief output the DM local velocity
+class DMVelOutputParams : public OutputParams
+{
+    virtual double dValue(GravityParticle *p)
+    {
+    if (TYPETest(p, TYPE_STAR))
+        return p->dDMVel();
+    else
+        return 0.0;
+    }
+    virtual Vector3D<double> vValue(GravityParticle *p)
+                {CkAssert(0); return 0.0;}
+    virtual void setDValue(GravityParticle *p, double val) {
+        if (TYPETest(p, TYPE_STAR)) p->dDMVel() = val;
+        }
+    virtual int64_t iValue(GravityParticle *p) {CkAssert(0); return 0.0;}
+    virtual void setIValue(GravityParticle *p, int64_t iValue) {CkAssert(0);}
+ public:
+    DMVelOutputParams() {}
+    DMVelOutputParams(std::string _fileName, int _iBinaryOut, double _dTime) {
+        bFloat = 1;
+        bVector = 0; fileName = _fileName; iBinaryOut = _iBinaryOut;
+        sTipsyExt = "DMVel"; sNChilExt = "DMVel";
+        dTime = _dTime;
+        iType = TYPE_STAR; }
+    PUPable_decl(DMVelOutputParams);
+    DMVelOutputParams(CkMigrateMessage *m) {}
+    virtual void pup(PUP::er &p) {
+        OutputParams::pup(p);//Call base class
+	}
+    };
+/// @brief output the DM capture rate (GeV/s)
+class DMCapRateOutputParams : public OutputParams
+{
+    virtual double dValue(GravityParticle *p)
+    {
+    if (TYPETest(p, TYPE_STAR))
+        return p->ddMcap();
+    else
+        return 0.0;
+    }
+    virtual Vector3D<double> vValue(GravityParticle *p)
+                {CkAssert(0); return 0.0;}
+    virtual void setDValue(GravityParticle *p, double val) {
+        if (TYPETest(p, TYPE_STAR)) p->ddMcap() = val;
+        }
+    virtual int64_t iValue(GravityParticle *p) {CkAssert(0); return 0.0;}
+    virtual void setIValue(GravityParticle *p, int64_t iValue) {CkAssert(0);}
+ public:
+    DMCapRateOutputParams() {}
+    DMCapRateOutputParams(std::string _fileName, int _iBinaryOut, double _dTime) {
+        bFloat = 1;
+        bVector = 0; fileName = _fileName; iBinaryOut = _iBinaryOut;
+        sTipsyExt = "DMCapRate"; sNChilExt = "DMCapRate";
+        dTime = _dTime;
+        iType = TYPE_STAR; }
+    PUPable_decl(DMCapRateOutputParams);
+    DMCapRateOutputParams(CkMigrateMessage *m) {}
+    virtual void pup(PUP::er &p) {
+        OutputParams::pup(p);//Call base class
+	}
+    };
+#endif
+
+
+
 /// @brief Output Oxygen mass fraction.
 class OxOutputParams : public OutputParams
 {

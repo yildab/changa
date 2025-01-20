@@ -378,6 +378,12 @@ GravityParticle *Stfm::FormStar(GravityParticle *p,  COOL *Cool, double dTime,
     starp->dStarLymanWerner() = calcLogSSPLymanWerner(7,log10(dDeltaM));
 #endif /*COOLING_MOLECULARH*/
 
+#ifdef DMFEEDBACK
+    starp->dDMDensity() = 1.0;
+    starp->dDMVel() = 2.0;
+    starp->ddMcap() = 0.0;
+#endif
+
     /* NB: It is important that the star inherit special
        properties of the gas particle such as being a target
        for movies or other tracing

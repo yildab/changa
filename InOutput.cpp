@@ -119,6 +119,11 @@ void load_tipsy_star(Tipsy::TipsyReader &r, GravityParticle &p)
 #ifdef COOLING_MOLECULARH 
     p.dStarLymanWerner() = 0.0;
 #endif
+#ifdef DMFEEDBACK
+    p.dDMDensity() = 1.0;
+    p.dDMVel() = 1.0;
+    p.ddMcap() = 0.0;
+#endif
 }
 
 /// @brief determine if we are on a TreePiece that will read

@@ -1,8 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
-AC_INIT([ChaNGa], [3.5], [changa-users@u.washington.edu])
+AC_PREREQ([2.72])
+AC_INIT([ChaNGa],[3.5],[changa-users@u.washington.edu])
 AC_DEFINE_UNQUOTED([NBODY_PACKAGE_VERSION], [$PACKAGE_VERSION])
 AC_CONFIG_SRCDIR([Reductions.h])
 
@@ -19,7 +19,7 @@ if test "x$STRUCT_DIR" = "x"; then
 fi
 AC_SUBST([STRUCT_DIR])
 
-AC_CONFIG_HEADER([config.h $STRUCT_DIR/config.h])
+AC_CONFIG_HEADERS([config.h $STRUCT_DIR/config.h])
 
 AC_ARG_VAR([CHARMC], "Charm compiler")
 # Checks for programs.
@@ -56,7 +56,15 @@ AC_SUBST([CMK_SMP], [${CMK_SMP}])
 AC_PROG_CXX($CHARMC)
 
 # Checks for header files.
-AC_HEADER_STDC
+m4_warn([obsolete],
+[The preprocessor macro 'STDC_HEADERS' is obsolete.
+  Except in unusual embedded environments, you can safely include all
+  C89 headers unconditionally.])dnl
+# Autoupdate added the next two lines to ensure that your configure
+# script's behavior did not change.  They are probably safe to remove.
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
+
 AC_CHECK_HEADERS([sys/bittypes.h endian.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h sys/param.h unistd.h values.h])
 AC_CHECK_HEADER(netinet/in.h,,[MISSING_NETINET=yes])
 if test "${MISSING_NETINET}" = "yes" ; then
@@ -283,6 +291,9 @@ fi
 if test "$FLAG_SUPERBUBBLE" = "-DSUPERBUBBLE" -a "$FLAG_COOLING" = "-DCOOLING_NONE" ; then
     AC_MSG_ERROR([SUPERBUBBLE requires cooling.  Enable it with --enable-cooling]);
 fi
+
+# DM FEEDBACK
+ARG_ENABLE([dmfeedback], [Enable DM-induced feedback], [FLAG_DMFEEDBACK], [-DDMFEEDBACK], [yes])
 
 # Calculate artificial viscosity from Cullen & Dehnen 2010
 ARG_ENABLE([cullenalpha], [Cullen Dehnen artificial viscosity], [FLAG_CULLENALPHA], [-DCULLENALPHA], [no])

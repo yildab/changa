@@ -127,6 +127,11 @@ typedef struct parameters {
     int iSIDMSelect;
     double dSIDMSigma;
     double dSIDMVariable;
+
+#ifdef DMFEEDBACK
+    double dDMSigma;
+    double dDMMass;
+#endif
     
     //
     // Output parameters
@@ -270,6 +275,10 @@ inline void operator|(PUP::er &p, Parameters &param) {
     p|param.dSIDMSigma;
     p|param.iSIDMSelect;
     p|param.dSIDMVariable;
+#ifdef DMFEEDBACK
+    p|param.dDMSigma;
+    p|param.dDMMass;
+#endif
     p|param.bStandard;
     p|param.bDoublePos;
     p|param.bDoubleVel;

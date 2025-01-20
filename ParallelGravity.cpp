@@ -45,6 +45,7 @@
 #include "externalGravity.h"
 #include "formatted_string.h"
 #include "PETreeMerger.h"
+#include "dmfeedback.h"
 
 #ifdef CUDA
 // for default per-list parameters
@@ -664,7 +665,14 @@ Main::Main(CkArgMsg* m) {
         param.iSIDMSelect=0;
         prmAddParam(prm,"iSIDMSelect",paramInt, &param.iSIDMSelect, sizeof(int),
                  "iSIDMSelect","SIDM version (0 off, 1 constant, 2 classical, 3 resonant)");
-
+#ifdef DMFEEDBACK
+    param.dDMSigma = -39;
+    prmAddParam(prm, "dDMSigma", paramDouble, &param.dDMSigma, 
+                sizeof(double), "dDMSigma", "<DM-nucleon cross-section, log10 > = 0.0");
+    param.dDMMass = 6;
+    prmAddParam(prm, "dDMMass", paramDouble, &param.dDMMass, 
+                sizeof(double), "dDMMass", "<DM particle mass, log10(GeV)> = 0.0");
+#endif
 	//
 	// Output parameters
 	//
@@ -2060,6 +2068,11 @@ void Main::advanceBigStep(int iStep) {
         loadBalance(PHASE_FEEDBACK);
         if(param.bStarForm)
             FormStars(dTime, param.stfm->dDeltaStarForm);
+#ifdef DMFEEDBACK
+        //  calculate local values for stars after formation 
+        //  and before feedback step
+        DMFeedbackLocalCalculations(dTime, param.dDelta, activeRung);
+#endif
         if(param.bFeedback) 
             StellarFeedback(dTime, param.stfm->dDeltaStarForm);
         }
@@ -2990,6 +3003,11 @@ Main::doSimulation()
 	      MuMaxOutputParams pMuMaxOut(achFile, param.iBinaryOut, 0.0);
 	      BSwOutputParams pBSwOut(achFile, param.iBinaryOut, 0.0);
 	      CsOutputParams pCsOut(achFile, param.iBinaryOut, 0.0);
+#ifdef DMFEEDBACK
+          DMDensityOutputParams pDMDensityOut(achFile, param.iBinaryOut, 0.0);
+          DMVelOutputParams pDMVelOut(achFile, param.iBinaryOut, 0.0);
+          DMCapRateOutputParams pDMCapRateOut(achFile, param.iBinaryOut, 0.0);
+#endif
               if (param.iBinaryOut) {
 #ifdef SUPERBUBBLE
                   outputBinary(puHotOut, param.bParaWrite,
@@ -2999,6 +3017,14 @@ Main::doSimulation()
                   outputBinary(pmHotOut, param.bParaWrite,
                       CkCallbackResumeThread());
                   outputBinary(pTeffOut, param.bParaWrite,
+                      CkCallbackResumeThread());
+#endif
+#ifdef DMFEEDBACK
+                  outputBinary(pDMDensityOut, param.bParaWrite,
+                      CkCallbackResumeThread());
+                  outputBinary(pDMVelOut, param.bParaWrite,
+                      CkCallbackResumeThread());
+                  outputBinary(pDMCapRateOut, param.bParaWrite,
                       CkCallbackResumeThread());
 #endif
                   outputBinary(pPresOut, param.bParaWrite,
@@ -3028,6 +3054,12 @@ Main::doSimulation()
                   treeProxy[0].outputASCII(puOut, param.bParaWrite, CkCallbackResumeThread());
                   treeProxy[0].outputASCII(pTeffOut, param.bParaWrite,CkCallbackResumeThread());
 #endif
+#ifdef DMFEEDBACK
+                  treeProxy[0].outputASCII(pDMDensityOut, param.bParaWrite, CkCallbackResumeThread());
+                  treeProxy[0].outputASCII(pDMVelOut, param.bParaWrite, CkCallbackResumeThread());
+                  treeProxy[0].outputASCII(pDMCapRateOut, param.bParaWrite, CkCallbackResumeThread());
+
+#endif 
                   treeProxy[0].outputASCII(pDenOut, param.bParaWrite, CkCallbackResumeThread());
                   treeProxy[0].outputASCII(pPresOut, param.bParaWrite, CkCallbackResumeThread());
                   treeProxy[0].outputASCII(pSphHOut, param.bParaWrite, CkCallbackResumeThread());
@@ -3469,6 +3501,11 @@ void Main::writeOutput(int iStep)
           double dTuFac = param.dGasConst/(param.dConstGamma-1)/param.dMeanMolWeight;
 	      TempEffOutputParams pTeffOut(achFile, param.iBinaryOut, 0.0, param.bGasCooling, dTuFac);
 #endif
+#ifdef DMFEEDBACK
+          DMDensityOutputParams pDMDensityOut(achFile, param.iBinaryOut, 0.0);
+          DMVelOutputParams pDMVelOut(achFile, param.iBinaryOut, 0.0);
+          DMCapRateOutputParams pDMCapRateOut(achFile, param.iBinaryOut, 0.0);
+#endif
 #ifdef DIFFUSION
     MetalsDotOutputParams pMetalsDotOut(achFile, param.iBinaryOut, dOutTime);
     OxygenMassFracDotOutputParams pOxDotOut(achFile, param.iBinaryOut, dOutTime);
@@ -3491,6 +3528,11 @@ void Main::writeOutput(int iStep)
       outputBinary(puOut, param.bParaWrite, CkCallbackResumeThread());
       outputBinary(pmHotOut, param.bParaWrite, CkCallbackResumeThread());
       outputBinary(pTeffOut, param.bParaWrite, CkCallbackResumeThread());
+#endif
+#ifdef DMFEEDBACK
+      outputBinary(pDMDensityOut, param.bParaWrite, CkCallbackResumeThread());
+      outputBinary(pDMVelOut, param.bParaWrite, CkCallbackResumeThread());
+      outputBinary(pDMCapRateOut, param.bParaWrite, CkCallbackResumeThread());
 #endif
         outputBinary(pOxOut, param.bParaWrite, CkCallbackResumeThread());
         outputBinary(pFeOut, param.bParaWrite, CkCallbackResumeThread());
@@ -3566,6 +3608,11 @@ void Main::writeOutput(int iStep)
       treeProxy[0].outputASCII(puHotOut, param.bParaWrite, CkCallbackResumeThread());
       treeProxy[0].outputASCII(puOut, param.bParaWrite, CkCallbackResumeThread());
       treeProxy[0].outputASCII(pTeffOut, param.bParaWrite,CkCallbackResumeThread());
+#endif
+#ifdef DMFEEDBACK
+      treeProxy[0].outputASCII(pDMDensityOut, param.bParaWrite, CkCallbackResumeThread());
+      treeProxy[0].outputASCII(pDMVelOut, param.bParaWrite, CkCallbackResumeThread());
+      treeProxy[0].outputASCII(pDMCapRateOut, param.bParaWrite, CkCallbackResumeThread());
 #endif
         treeProxy[0].outputASCII(pRung, param.bParaWrite,
                                  CkCallbackResumeThread());

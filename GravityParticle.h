@@ -261,6 +261,12 @@ class extraStarData
 #ifdef COOLING_MOLECULARH
     double _dStarLymanWerner;	/* Lyman Werner radiation emmited from star particles */
 #endif /*COOLING_MOLECULARH*/
+#ifdef DMFEEDBACK 
+    double _dDMDensity; /* local DM density */
+    double _dDMVel; /* local DM relative velocity */
+    double _ddMcap; /* DM capture rate, GeV per s */
+#endif
+
  public:
     inline double& fMetals() {return _fMetals;}
     inline double& fTimeForm() {return _fTimeForm;}
@@ -281,6 +287,11 @@ class extraStarData
     inline double dStarLymanWerner() const {return _dStarLymanWerner;}
     inline double& dStarLymanWerner() {return _dStarLymanWerner;}
 #endif /*COOLING_MOLECULARH*/
+#ifdef DMFEEDBACK
+    inline double& dDMDensity() {return _dDMDensity;}
+    inline double& dDMVel() {return _dDMVel;}
+    inline double& ddMcap() {return _ddMcap;}
+#endif
     void pup(PUP::er &p) {
 	p | _fMetals;
 	p | _fTimeForm;
@@ -300,6 +311,11 @@ class extraStarData
 #ifdef COOLING_MOLECULARH
 	p | _dStarLymanWerner;
 #endif /*COOLINg_MOLECULARH*/
+#ifdef DMFEEDBACK
+    p | _dDMDensity;
+    p | _dDMVel;
+    p | _ddMcap;
+#endif
 	}
     };
 
@@ -485,6 +501,11 @@ public:
         inline double dStarLymanWerner() const { IMASTAR; return (((extraStarData*)extraData)->dStarLymanWerner());}
         inline double& dStarLymanWerner() { IMASTAR; return (((extraStarData*)extraData)->dStarLymanWerner());}
 #endif /*COOLING_MOLECULARH*/
+#ifdef DMFEEDBACK
+    inline double& dDMDensity() const { IMASTAR; return (((extraStarData*)extraData)->dDMDensity());}
+    inline double& dDMVel() const { IMASTAR; return (((extraStarData*)extraData)->dDMVel());}
+    inline double& ddMcap() const { IMASTAR; return (((extraStarData*)extraData)->ddMcap());}
+#endif
 
 // See above debugging macros
 #undef IMAGAS

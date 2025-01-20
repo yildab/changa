@@ -603,6 +603,7 @@ public:
 	void doSph(int activeRung, int bNeedDensity = 1);
 	void AGORAfeedbackPreCheck(double dTime, double dDelta, double dTimeToSF);
 	void FormStars(double dTime, double dDelta);
+  void DMFeedbackLocalCalculations(double dTime,double dDelta, int activeRung);
 	void StellarFeedback(double dTime, double dDelta);
 	void outputBlackHoles(double dTime);
 	void SetSink();

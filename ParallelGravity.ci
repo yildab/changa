@@ -161,6 +161,12 @@ mainmodule ParallelGravity {
   PUPable MuMaxOutputParams;
   PUPable BSwOutputParams;
   PUPable CsOutputParams;
+#ifdef DMFEEDBACK
+  PUPable DMVelOutputParams;
+  PUPable DMDensityOutputParams;
+  PUPable DMCapRateOutputParams;
+  PUPable DMFeedbackSmoothParams;
+#endif
   PUPable EDotOutputParams;
   PUPable Cool0OutputParams;
   PUPable Cool1OutputParams;
